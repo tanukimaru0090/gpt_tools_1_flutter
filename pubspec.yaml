@@ -1,7 +1,9 @@
 flutter_icons:
+  windows:
+    generate: true
+    image_path: "./assets/img/app.png"
   ios: true
   android: true
-  windows: true
   image_path: "./assets/img/app.png"
   adaptive_icon_background: "#323232"
   #adaptive_icon_foreground: "assets/img/app.ico"

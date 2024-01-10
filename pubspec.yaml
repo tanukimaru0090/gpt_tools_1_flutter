@@ -1,8 +1,9 @@
 flutter_icons:
   ios: true
   android: true
+  windows: true
   image_path: "./assets/img/app.png"
-  adaptive_icon_background: "#fffffff"
+  adaptive_icon_background: "#323232"
   #adaptive_icon_foreground: "assets/img/app.ico"
 name: gpt_tools_1
 description: "A new Flutter project."
@@ -61,6 +62,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  #windows: 
+    #icon: "./assets/img/app.png"
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

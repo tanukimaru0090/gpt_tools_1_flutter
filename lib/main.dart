@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'GPT回答用プロンプト生成ツール',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -28,10 +28,22 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme(
+          brightness: Brightness.light,
+          primary: Colors.grey,
+          onPrimary: Colors.white,
+          secondary: Colors.blue,
+          onSecondary: Colors.black,
+          surface: Colors.white,
+          onSurface: Colors.black,
+          background: Colors.white,
+          onBackground: Colors.black,
+          error: Colors.red,
+          onError: Colors.white,
+        ),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'GPT回答用プロンプトを生成します'),
     );
   }
 }
@@ -55,16 +67,49 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  String _questionPrompt = "";
+  String _optionPrompt = "";
+  double _value = 0;
 
-  void _incrementCounter() {
+  List<Widget> _widgets = [];
+// コピーボタンが押された時の処理をする関数
+  void _onCopy() {}
+  void _onGenerate() {}
+  void _onDeleteWidget() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      try {
+        if (_widgets.isNotEmpty) {
+          _widgets.removeLast();
+        }
+      } catch (e) {
+        print(e);
+      }
+    });
+  }
+
+  // リストにウィジェットを追加する関数
+  void _onAddWidget() {
+    setState(() {
+      // Rowウィジェットを作成
+      Widget row = SizedBox(
+        width: 200.0,
+        child: Row(
+          children: <Widget>[
+            // 入力フォーム
+            Flexible(
+              child: TextFormField(
+                decoration: InputDecoration(
+                  labelText: '', // ラベル
+                  border: OutlineInputBorder(), // 枠線
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+
+      // リストに追加
+      _widgets.add(row);
     });
   }
 
@@ -86,39 +131,102 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
+
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
+        child: SingleChildScrollView(
+          // スクロールできるようにする
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch, // 幅を最大にする
+
+            children: <Widget>[
+              SizedBox(
+                width: 200.0,
+                child: TextFormField(
+                  onChanged: (input) {
+                    setState(() {
+                      _questionPrompt = input; // 値を更新
+                    });
+                  },
+                  maxLength: 1000,
+                  maxLines: 15,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: "問題を入力してください",
+                    labelText: "問題",
+                    contentPadding: EdgeInsets.all(10.0), // 余白を10ピクセルに変更
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 200.0,
+                child: ElevatedButton(
+                  child: Text('選択肢を追加'),
+                  onPressed: _onAddWidget,
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.purple, // 背景色
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 200.0,
+                child: ElevatedButton(
+                  child: Text('選択肢を削除'),
+                  onPressed: _onDeleteWidget,
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.purple, // 背景色
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 200.0,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: _widgets.length, // リストの要素数
+                  itemBuilder: (context, index) {
+                    // リストの各要素に対応するウィジェットを返す
+                    return _widgets[index];
+                  },
+                ),
+              ),
+              SizedBox(
+                width: 200.0,
+                child: TextFormField(
+                  onChanged: (input) {
+                    setState(() {
+                      _optionPrompt = input; // 値を更新
+                    });
+                  },
+                  maxLength: 1000,
+                  maxLines: 15,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: "追加のプロンプトを入力してください",
+                    labelText: "追加のプロンプト",
+                    contentPadding: EdgeInsets.zero, // 余白をなくす
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 200.0,
+                child: ElevatedButton(
+                  child: Text("生成"),
+                  onPressed: _onGenerate,
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.purple, // 背景色
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
+
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
+        onPressed: _onCopy,
+        tooltip: 'Copy!',
+        child: const Icon(Icons.copy),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
